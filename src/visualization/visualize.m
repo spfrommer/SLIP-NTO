@@ -44,8 +44,7 @@ function [] = visualize( funparams, sp, vp )
         xtoe  = interp1(times, xtoe, 0:vp.dt:times(end), 'linear');
         x     = interp1(times, x,    0:vp.dt:times(end), 'linear');
         y     = interp1(times, y,    0:vp.dt:times(end), 'linear');
-        % TODO: fix r interpolation between phase transitions
-        r     = interp1(times, r,    0:vp.dt:times(end), 'linear');
+        r     = phaseInterp(times, r, 0:vp.dt:times(end), 'linear');
         times = 0:vp.dt:times(end);
     end
     phi = atan2(y, x - xtoe);
