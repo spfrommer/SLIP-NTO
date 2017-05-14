@@ -1,12 +1,25 @@
 classdef (Sealed) Resource < handle
    methods (Access = public)
-      function path = getDataPath(~, simNum)
-         path = strcat('../data/sim', num2str(simNum), '.txt');
+      function n = numDataFiles(obj)
+         n = 0;
+         while exist(obj.getDataPath(n + 1), 'file') == 2
+            n = n + 1;
+         end
       end
       
-      function [fpath, bpath] = getFigurePaths(~, simNum)
-         fpath = strcat('../figures/fig', num2str(simNum), 'f.png');
-         bpath = strcat('../figures/fig', num2str(simNum), 'b.png');
+      function path = projRoot(~)
+         path = mfilename('fullpath');
+         idx = strfind(path, filesep);
+         path = path(1:idx(end-2));
+      end
+      
+      function path = getDataPath(obj, simNum)
+         path = strcat(obj.projRoot(), 'data/sim', num2str(simNum), '.txt');
+      end
+      
+      function [fpath, bpath] = getFigurePaths(obj, simNum)
+         fpath = strcat(obj.projRoot(), 'figures/fig', num2str(simNum), 'f.png');
+         bpath = strcat(obj.projRoot(), 'figures/fig', num2str(simNum), 'b.png');
       end
    end
    methods (Access = private)
