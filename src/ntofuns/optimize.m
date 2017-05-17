@@ -76,7 +76,7 @@ function [ optimal, cost, flag ] = optimize( sp )
             [ci, ceqi, cjaci, ceqjaci] = constraintsFun(x0);
         end
     
-        fprintf('########## Finding feasible trajectory ##########');
+        fprintf('########## Finding feasible trajectory ##########\n');
         % Find any feasible trajectory
         [feasible, ~, flag, ~] = ...
             fmincon(@(x) call(ccostFun, x, 2),x0,A,B,Aeq,Beq,lb,ub, ...
