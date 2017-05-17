@@ -107,4 +107,4 @@ else
 end
 
 fprintf('Finished optimizing in %f seconds\n', toc);
-visualize
+visualize(optimal, sp, VisParams());

@@ -9,5 +9,4 @@ finX = 1.1;
 sp = SimParams(['str'], slipPatch, stateI, finX);
 [optimal, cost, flag] = optimize(sp);
 
-vp = VisParams();
-visualize;
+visualize(optimal, sp, VisParams());
