@@ -21,7 +21,7 @@ function [] = visualize( funparams, sp, vp )
         % Interpolate ballistic flight
         time = 0;
         while time < flightT(p) - vp.dt
-            xtoe = [xtoe(1:i-1); xtoe(i-1); xtoe(i:end)];
+            xtoe = [xtoe(1:i-1); NaN; xtoe(i:end)];
             x = [x(1:i-1); (x(i-1)+xdot(i-1)*vp.dt); x(i:end)];
             xdot = [xdot(1:i-1); xdot(i-1); xdot(i:end)];
             y = [y(1:i-1); (y(i-1)+ydot(i-1)*vp.dt); y(i:end)];
