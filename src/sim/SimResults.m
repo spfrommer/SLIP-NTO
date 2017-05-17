@@ -57,21 +57,23 @@ classdef SimResults < handle
     end
     
     methods
-       function [] = visualizeTrajectory( obj, vp )
+       function [] = render( obj, vp )
            if nargin < 2
               vp = VisParams();
            end
            
-           if obj.flagBack >= 0
+           if obj.flagBack > 0
               visualize(obj.optimalBack, obj.spBack, vp);
            end
         
-           if obj.flagFor >= 0
+           if obj.flagFor > 0
               visualize(obj.optimalFor, obj.spFor, vp);
            end
        end
        
-       function [] = renderTrajectories( obj, simNum, vp )
+       function [] = saveRender( obj, simNum, vp )
+           % Saves a video of the trajectory and a snapshot of the starting
+           % state
            if nargin < 3
               vp = VisParams();
            end
@@ -81,22 +83,22 @@ classdef SimResults < handle
            vp.picPath = pathb;
            vp2.picPath = pathf;
            
-           if obj.flagFor >= 0
+           if obj.flagFor > 0
               visualize(obj.optimalFor, obj.spFor, vp);
            end
-           if obj.flagBack >= 0
+           if obj.flagBack > 0
               visualize(obj.optimalBack, obj.spBack, vp2);
            end
        end
        
        function control = getControl( obj )
-           if obj.flagBack >= 0 && obj.flagFor < 0
+           if obj.flagBack > 0 && obj.flagFor <= 0
                control = -1;
-           elseif obj.flagFor >= 0 && obj.flagBack < 0
+           elseif obj.flagFor > 0 && obj.flagBack <= 0
                control = 1;
            else
                % If back has greater cost, control should be one (true/forward)
-               control = costB > costF;
+               control = obj.costBack > obj.costFor;
            end
        end
        
