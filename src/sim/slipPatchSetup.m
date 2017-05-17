@@ -1,4 +1,4 @@
-function [ slipPatch, state, finX ] = initialConditions(  )
+function [ slipPatch, state, finX ] = slipPatchSetup(  )
     slipPatch = [0, 0.8 + rand() * 1];
     finX = slipPatch(2);
     

@@ -7,8 +7,8 @@ addpath('utils');
 addpath('visualization');
 rng('shuffle');
 
-for i = 1:300
-    [slipPatch, stateI, finX] = initialConditions();
+for i = Resource.instance().numDataFiles()+1:300
+    [slipPatch, stateI, finX] = slipPatchSetup();
     results = runSim(slipPatch, stateI, finX);
     writeSim(results, i);
 end
