@@ -21,6 +21,11 @@ classdef (Sealed) Resource < handle
          fpath = strcat(obj.projRoot(), 'figures/fig', num2str(simNum), 'f.png');
          bpath = strcat(obj.projRoot(), 'figures/fig', num2str(simNum), 'b.png');
       end
+      
+      function [fpath, bpath] = getVideoPaths(obj, simNum)
+         fpath = strcat(obj.projRoot(), 'videos/vid', num2str(simNum), 'f.png');
+         bpath = strcat(obj.projRoot(), 'videos/vid', num2str(simNum), 'b.png');
+      end
    end
    methods (Access = private)
       function obj = Resource()

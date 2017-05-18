@@ -1,7 +1,7 @@
 function [ stanceT, flightT, xtoe, xtoedot, x, xdot, y, ydot, ...
-           ra, radot, raddot, torque] = unpack( funparams, sp )
-    p = size(sp.phases, 1);
-    cnt = sp.gridn * p;
+           ra, radot, raddot, torque] = unpack( funparams, params )
+    p = size(params.phases, 1);
+    cnt = params.gridn * p;
     
     stanceT       = funparams(1               : p);
     flightT       = funparams(p + 1           : p * 2 - 1);

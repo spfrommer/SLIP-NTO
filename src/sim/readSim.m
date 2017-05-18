@@ -1,5 +1,5 @@
 function [ results ] = readSim( simNum )
-    results = SimResults();
+    results = NTOResults();
         
     fid = fopen(Resource.instance().getDataPath(simNum), 'r');
     slipPatch = sscanf(fgetl(fid), '%f,')';
@@ -14,7 +14,7 @@ function [ results ] = readSim( simNum )
     results.costFor = sscanf(fgetl(fid), '%f');
     results.flagFor = sscanf(fgetl(fid), '%f');
     
-    results.spBack = SimParams(['sli'; 'stl'; 'str'], slipPatch, stateI, finX);
-    results.spFor = SimParams(['sli'; 'str'], slipPatch, stateI, finX);
+    results.paramsBack = NTOParams(['sli'; 'stl'; 'str'], slipPatch, stateI, finX);
+    results.paramsFor = NTOParams(['sli'; 'str'], slipPatch, stateI, finX);
     fclose(fid);
 end

@@ -1,5 +1,5 @@
 function [ xtoedotland, xland, xdotland, yland, ydotland ] = ...
-        ballisticDynamics( toState, flightTime, landPhaseStr, sp )
+        ballisticDynamics( toState, flightTime, landPhaseStr, params )
 
     % Expand the important information from the takeoff state
     stateCell = num2cell(toState');
@@ -14,8 +14,8 @@ function [ xtoedotland, xland, xdotland, yland, ydotland ] = ...
         xtoedotland = 0;
     end
     xland = x + xdot * flightTime;
-    yland = y + ydot * flightTime - 0.5 * sp.gravity * flightTime^2;
+    yland = y + ydot * flightTime - 0.5 * params.gravity * flightTime^2;
     xdotland = xdot;
-    ydotland = ydot - sp.gravity * flightTime;
+    ydotland = ydot - params.gravity * flightTime;
 end
 

@@ -1,4 +1,4 @@
-classdef SimParams < handle
+classdef NTOParams < handle
     properties
         % Order of phases (sli=slip, stl=stick left side of patch, str =
         % stick right side of patch
@@ -34,7 +34,7 @@ classdef SimParams < handle
     end
     
     methods
-        function obj = SimParams(phases, slipPatch, initialState, finProfX)
+        function obj = NTOParams(phases, slipPatch, initialState, finProfX)
             if nargin == 0
                 phases = [];
                 slipPatch = [];

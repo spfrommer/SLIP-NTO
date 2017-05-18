@@ -2,20 +2,20 @@ function [ results ] = runSim( slipPatch, stateI, finX )
     disp('-------------NEW SIMULATION-----------------');
     disp('--------OPTIMIZING BACKWARDS STEP-----------');
     
-    spBack = SimParams(['sli'; 'stl'; 'str'], slipPatch, stateI, finX);
-    [ optimalB, costB, flagB ] = optimize(spBack);
+    paramsBack = NTOParams(['sli'; 'stl'; 'str'], slipPatch, stateI, finX);
+    [ optimalB, costB, flagB ] = optimize(paramsBack);
     
     disp('--------OPTIMIZING FORWARDS STEP------------');
     
-    spFor = SimParams(['sli'; 'str'], slipPatch, stateI, finX);
-    [ optimalF, costF, flagF ] = optimize(spFor);
+    paramsFor = NTOParams(['sli'; 'str'], slipPatch, stateI, finX);
+    [ optimalF, costF, flagF ] = optimize(paramsFor);
     
-    results = SimResults();
-    results.spBack = spBack;
+    results = NTOResults();
+    results.paramsBack = paramsBack;
     results.optimalBack = optimalB;
     results.costBack = costB;
     results.flagBack = flagB;
-    results.spFor = spFor;
+    results.paramsFor = paramsFor;
     results.optimalFor = optimalF;
     results.costFor = costF;
     results.flagFor = flagF;

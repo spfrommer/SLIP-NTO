@@ -1,7 +1,7 @@
 GEN_CONSTRAINTS = true;
 GEN_COSTS = true;
 
-sp = SimParams(['str'], [0,1], [1.1; 0; 1.1-cosd(45); 0; ...
+params = NTOParams(['str'], [0,1], [1.1; 0; 1.1-cosd(45); 0; ...
                                 sind(45); 0; 1; 0], 1.1);
 
 % Options for optimizing the constant cost function
@@ -34,16 +34,16 @@ B = [];
 Aeq = [];
 Beq = [];
 % Set up the bounds
-[lb, ub] = bounds(sp);
+[lb, ub] = bounds(params);
 
 tic
 
-numVars = size(sp.phases, 1) * 2 - 1 + sp.gridn * size(sp.phases, 1) * 10;
+numVars = size(params.phases, 1) * 2 - 1 + params.gridn * size(params.phases, 1) * 10;
 funparams = conj(sym('x', [1 numVars], 'real')');
 
 if GEN_CONSTRAINTS
     fprintf('Generating constraints...\n');
-    [c, ceq] = constraints(funparams, sp);
+    [c, ceq] = constraints(funparams, params);
     cjac = jacobian(c, funparams).';
     ceqjac = jacobian(ceq, funparams).';
     constraintsFun = matlabFunction(c, ceq, cjac, ceqjac, 'Vars', {funparams});
@@ -52,15 +52,15 @@ end
 
 if GEN_COSTS
     fprintf('Generating costs...\n');
-    ccost = constcost(funparams, sp);
+    ccost = constcost(funparams, params);
     ccostjac = jacobian(ccost, funparams).';
     ccostFun = matlabFunction(ccost, ccostjac, 'Vars', {funparams});
 
-    acost = actsqrcost(funparams, sp);
+    acost = actsqrcost(funparams, params);
     acostjac = jacobian(acost, funparams).';
     acostFun = matlabFunction(acost, acostjac, 'Vars', {funparams});
     
-    awcost = actworkcost(funparams, sp);
+    awcost = actworkcost(funparams, params);
     awcostjac = jacobian(awcost, funparams).';
     awcostFun = matlabFunction(awcost, awcostjac, 'Vars', {funparams});
     fprintf('Done generating costs...\n');
@@ -107,4 +107,4 @@ else
 end
 
 fprintf('Finished optimizing in %f seconds\n', toc);
-visualize(optimal, sp, VisParams());
+visualize(optimal, params, VisParams());

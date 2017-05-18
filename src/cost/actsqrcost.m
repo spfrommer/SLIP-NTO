@@ -1,9 +1,9 @@
-function [ cost ] = actsqrcost( funparams, sp )
+function [ cost ] = actsqrcost( funparams, params )
     % Unpack the vector
     [stanceT, ~, ~, ~, ~, ~, ~, ~, ~, ~, raddot, torque] = ...
-        unpack(funparams, sp);
+        unpack(funparams, params);
 
-    dts = kron(stanceT./sp.gridn, ones(sp.gridn, 1));
+    dts = kron(stanceT./params.gridn, ones(params.gridn, 1));
     cost = sum((raddot .* dts) .^ 2) + sum((torque .* dts) .^ 2);
 end
 

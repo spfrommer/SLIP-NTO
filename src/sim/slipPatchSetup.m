@@ -2,7 +2,7 @@ function [ slipPatch, state, finX ] = slipPatchSetup(  )
     slipPatch = [0, 0.8 + rand() * 1];
     finX = slipPatch(2);
     
-    sp = SimParams();
+    params = NTOParams();
     % Generate random initial hip x with 0.3 meter margin from patch edges
     x = rand() * (slipPatch(2) - 0.6) + 0.3;
     % Random initial hip x vel must be positive
@@ -13,13 +13,13 @@ function [ slipPatch, state, finX ] = slipPatchSetup(  )
     xtoedot = xdot;
     
     % Y calculated assuming rtouchdown = maxlen
-    y = sqrt(sp.maxlen ^ 2 - (x - xtoe) ^ 2);
+    y = sqrt(params.maxlen ^ 2 - (x - xtoe) ^ 2);
     % Y vel some random downward number
     ydot = -rand() * 0.4;
     
     % Actuated length at max length, and initial actuated length derivative
     % is zero
-    ra = sp.maxlen;
+    ra = params.maxlen;
     radot = 0;
     
     state = [xtoe; xtoedot; x; xdot; y; ydot; ra; radot];

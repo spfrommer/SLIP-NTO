@@ -1,10 +1,10 @@
-function [ optimal, cost, flag ] = optimize( sp )
+function [ optimal, cost, flag ] = optimize( params )
     disp('Slip patch: ');
-    disp(sp.slipPatch);
+    disp(params.slipPatch);
     disp('Initial state: ');
-    disp(sp.initialState);
+    disp(params.initialState);
     disp('Final x: ');
-    disp(sp.finalProfileX);
+    disp(params.finalProfileX);
 
     % Options for optimizing the constant cost function
     cOptions = optimoptions(@fmincon, 'TolFun', 0.00000001, ...
@@ -36,28 +36,28 @@ function [ optimal, cost, flag ] = optimize( sp )
     Aeq = [];
     Beq = [];
     % Set up the bounds
-    [lb, ub] = bounds(sp);
+    [lb, ub] = bounds(params);
 
-    numVars = size(sp.phases, 1) * 2 - 1 + sp.gridn * size(sp.phases, 1) * 10;
+    numVars = size(params.phases, 1) * 2 - 1 + params.gridn * size(params.phases, 1) * 10;
     funparams = conj(sym('x', [1 numVars], 'real')');
     
     fprintf('Generating constraints...\n');
-    [c, ceq] = constraints(funparams, sp);
+    [c, ceq] = constraints(funparams, params);
     cjac = jacobian(c, funparams).';
     ceqjac = jacobian(ceq, funparams).';
     fprintf('Generating constraints function...\n');
     constraintsFun = matlabFunction(c, ceq, cjac, ceqjac, 'Vars', {funparams});
     
     fprintf('Generating costs...\n');
-    ccost = constcost(funparams, sp);
+    ccost = constcost(funparams, params);
     ccostjac = jacobian(ccost, funparams).';
     ccostFun = matlabFunction(ccost, ccostjac, 'Vars', {funparams});
 
-    acost = actsqrcost(funparams, sp);
+    acost = actsqrcost(funparams, params);
     acostjac = jacobian(acost, funparams).';
     acostFun = matlabFunction(acost, acostjac, 'Vars', {funparams});
     
-    awcost = actworkcost(funparams, sp);
+    awcost = actworkcost(funparams, params);
     awcostjac = jacobian(awcost, funparams).';
     awcostFun = matlabFunction(awcost, awcostjac, 'Vars', {funparams});
     

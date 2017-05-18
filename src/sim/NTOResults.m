@@ -1,7 +1,7 @@
-classdef SimResults < handle
+classdef NTOResults < handle
     properties
-        spFor
-        spBack
+        paramsFor
+        paramsBack
         costFor
         costBack
         % The raw optimizer outputs
@@ -13,17 +13,17 @@ classdef SimResults < handle
     
     methods (Access = private)
         function [r, rdot, radotCombined, raddotCombined, fs, angleDeltas, torqueCombined, ...
-                workAng, workRa] = process(~, optimal, sp)
+                workAng, workRa] = process(~, optimal, params)
             [stanceT, ~, xtoe, ~, x, xdot, y, ydot, ra, radot, raddot, torque] = ...
-                unpack(optimal, sp);
-           phaseN = size(sp.phases, 1);
+                unpack(optimal, params);
+           phaseN = size(params.phases, 1);
 
            r = sqrt((x - xtoe).^2 + y.^2);
            rdot = ((x-xtoe).*(xdot)+y.*ydot)./(r);
-           fs = sp.spring * (ra - r) + sp.damp * (radot - rdot);
+           fs = params.spring * (ra - r) + params.damp * (radot - rdot);
 
-           startRemInd = 1 : sp.gridn : sp.gridn * phaseN;
-           endRemInd = sp.gridn : sp.gridn : sp.gridn * phaseN;
+           startRemInd = 1 : params.gridn : params.gridn * phaseN;
+           endRemInd = params.gridn : params.gridn : params.gridn * phaseN;
 
            [fsA, fsB] = deal(fs);
            fsA(startRemInd) = [];
@@ -52,7 +52,7 @@ classdef SimResults < handle
            workAng = torqueCombined .* angleDeltas;
            
            workRa = fsCombined .* radotCombined;
-           workRa = workRa .* kron(stanceT./sp.gridn, ones(sp.gridn - 1, 1));
+           workRa = workRa .* kron(stanceT./params.gridn, ones(params.gridn - 1, 1));
         end
     end
     
@@ -63,11 +63,11 @@ classdef SimResults < handle
            end
            
            if obj.flagBack > 0
-              visualize(obj.optimalBack, obj.spBack, vp);
+              visualize(obj.optimalBack, obj.paramsBack, vp);
            end
         
            if obj.flagFor > 0
-              visualize(obj.optimalFor, obj.spFor, vp);
+              visualize(obj.optimalFor, obj.paramsFor, vp);
            end
        end
        
@@ -84,10 +84,10 @@ classdef SimResults < handle
            vp2.picPath = pathf;
            
            if obj.flagFor > 0
-              visualize(obj.optimalFor, obj.spFor, vp);
+              visualize(obj.optimalFor, obj.paramsFor, vp);
            end
            if obj.flagBack > 0
-              visualize(obj.optimalBack, obj.spBack, vp2);
+              visualize(obj.optimalBack, obj.paramsBack, vp2);
            end
        end
        
@@ -113,7 +113,7 @@ classdef SimResults < handle
            end
            
            [ stanceT, flightT, xtoe, xtoedot, x, xdot, y, ydot, ...
-             ra, radot, raddot, torque] = unpack(obj.optimalFor, obj.spFor);
+             ra, radot, raddot, torque] = unpack(obj.optimalFor, obj.paramsFor);
            af.stanceT = stanceT;
            af.flightT = flightT;
            af.xtoe = xtoe;
@@ -129,7 +129,7 @@ classdef SimResults < handle
            
            [af.r, af.rdot, af.radotCombined, af.raddotCombined, af.fs, ...
              af.angleDeltas, af.torqueCombined, af.workAng, af.workRa] ...
-               = obj.process(obj.optimalFor, obj.spFor);
+               = obj.process(obj.optimalFor, obj.paramsFor);
        end
        
        function ab = analyzeBack( obj )
@@ -143,7 +143,7 @@ classdef SimResults < handle
            end
            
            [ stanceT, flightT, xtoe, xtoedot, x, xdot, y, ydot, ...
-             ra, radot, raddot, torque] = unpack(obj.optimalBack, obj.spBack);
+             ra, radot, raddot, torque] = unpack(obj.optimalBack, obj.paramsBack);
            ab.stanceT = stanceT;
            ab.flightT = flightT;
            ab.xtoe = xtoe;
@@ -159,7 +159,7 @@ classdef SimResults < handle
            
            [ab.r, ab.rdot, ab.radotCombined, ab.raddotCombined, ab.fs, ...
              ab.angleDeltas, ab.torqueCombined, ab.workAng, ab.workRa] ...
-               = obj.process(obj.optimalBack, obj.spBack);
+               = obj.process(obj.optimalBack, obj.paramsBack);
        end
     end
 end

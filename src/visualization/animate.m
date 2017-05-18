@@ -1,5 +1,5 @@
 function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
-                       transTs, sp, vp )
+                       transTs, ntoParams, visParams )
     % Initialize the figure
     figure(fig);
     clf;
@@ -10,21 +10,21 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
           'FaceColor', [0.05 0.2 0.05]);
     
     % Draw ice patch
-    patch([sp.slipPatch, fliplr(sp.slipPatch)], ...
+    patch([ntoParams.slipPatch, fliplr(ntoParams.slipPatch)], ...
           [0 0 -0.1 -0.1], [0 0 0.5], 'FaceColor', [0.5 0.5 1]);
     
     % Initialize the spring plot
     springPlot = plot(0, 0);
     % Draw the path of the hip
-    if vp.showPath
-        if ~vp.interpolate
+    if visParams.showPath
+        if ~visParams.interpolate
             fprintf('Warning: to show path must interpolate first');
         end
         
-        selTimes = times(1:vp.pathSel:end);
-        selXs = xs(1:vp.pathSel:end);
-        selYs = ys(1:vp.pathSel:end);
-        selXtoes = xtoes(1:vp.pathSel:end);
+        selTimes = times(1:visParams.pathSel:end);
+        selXs = xs(1:visParams.pathSel:end);
+        selYs = ys(1:visParams.pathSel:end);
+        selXtoes = xtoes(1:visParams.pathSel:end);
         
         % Plot paths
         for i = 1:(length(transTs)-1)
@@ -32,16 +32,16 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
             
             % Get color for current phase
             if mod(i,2)
-                color = vp.phaseMColor(ceil(i / 2), :);
+                color = visParams.phaseMColor(ceil(i / 2), :);
             else
-                color = vp.flightMColor;
+                color = visParams.flightMColor;
             end
             
             if isempty(indices)
                 % If last phase, plot end position for clarity
                 if i == length(transTs) - 1
                     plot(xs(end), ys(end), 'o', ...
-                        'MarkerSize', vp.markerSize, ...
+                        'MarkerSize', visParams.markerSize, ...
                         'MarkerEdgeColor', 'none', ...
                         'MarkerFaceColor', color);
                 else
@@ -52,26 +52,26 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
             % Plot path of toe during slipping phase
             if i == 1
                 plot(selXtoes(indices), zeros(length(indices)), 'o', ...
-                 'MarkerSize', vp.markerSize, ...
+                 'MarkerSize', visParams.markerSize, ...
                  'MarkerEdgeColor', 'none', ...
-                 'MarkerFaceColor', vp.toeMColor);
+                 'MarkerFaceColor', visParams.toeMColor);
                 plot(selXtoes(1), zeros(1), 'o', ...
-                 'MarkerSize', vp.markerSize+1, ...
-                 'MarkerEdgeColor', vp.toeMStartColor);
+                 'MarkerSize', visParams.markerSize+1, ...
+                 'MarkerEdgeColor', visParams.toeMStartColor);
                 plot(selXtoes(1), zeros(1), 'o', ...
-                 'MarkerSize', vp.markerSize+2, ...
-                 'MarkerEdgeColor', vp.toeMStartColor);
+                 'MarkerSize', visParams.markerSize+2, ...
+                 'MarkerEdgeColor', visParams.toeMStartColor);
                 plot(selXtoes(indices(end)), zeros(1), 'o', ...
-                 'MarkerSize', vp.markerSize+1, ...
-                 'MarkerEdgeColor', vp.toeMEndColor);
+                 'MarkerSize', visParams.markerSize+1, ...
+                 'MarkerEdgeColor', visParams.toeMEndColor);
                 plot(selXtoes(indices(end)), zeros(1), 'o', ...
-                 'MarkerSize', vp.markerSize+2, ...
-                 'MarkerEdgeColor', vp.toeMEndColor);
+                 'MarkerSize', visParams.markerSize+2, ...
+                 'MarkerEdgeColor', visParams.toeMEndColor);
             end
             
             % Plot path of hip
             plot(selXs(indices), selYs(indices), 'o', ...
-                 'MarkerSize', vp.markerSize, ...
+                 'MarkerSize', visParams.markerSize, ...
                  'MarkerEdgeColor', 'none', ...
                  'MarkerFaceColor', color);
         end
@@ -81,8 +81,8 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
     % Initialize the toe circle fill
     toeCircle = [];
     
-    time = -vp.dt;
-    if vp.drawText
+    time = -visParams.dt;
+    if visParams.drawText
         % Draw debug text
         timeText = text(0, 1.8, sprintf('Simulation time: %f', time), 'FontSize', 13);
         lenText = text(0, 1.6, sprintf('len: %f', 0), 'FontSize', 13);
@@ -90,7 +90,7 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
 
     has_saved = false;
     while time <= times(end)
-        time = time + vp.dt;
+        time = time + visParams.dt;
         tgreater = find(times >= time);
         if ~isempty(tgreater)
             ti = tgreater(1);
@@ -101,7 +101,7 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
         ncoils = 10;
         coilres = 4;
         springY = linspace(0, -lens(ti), 4*coilres*ncoils + 1);
-        springX = sin(springY*2*pi*ncoils / lens(ti)) * vp.springWidth;
+        springX = sin(springY*2*pi*ncoils / lens(ti)) * visParams.springWidth;
 
         % Rotate springX and springY
         springMat = [springX; springY];
@@ -128,41 +128,41 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
 
         % Draw hip
         [hipX,hipY] = pol2cart(linspace(0, 2 * pi, 100), ...
-                         ones(1, 100) * vp.hipDiam);
+                         ones(1, 100) * visParams.hipDiam);
         hipX = hipX + xs(ti);
         hipY = hipY + ys(ti);
-        hipCircle = fill(hipX, hipY, vp.hipColor);
-        alpha(vp.hipAlpha);
+        hipCircle = fill(hipX, hipY, visParams.hipColor);
+        alpha(visParams.hipAlpha);
         
         % Draw toe
         if ~isnan(xtoes(ti))
             [toeX,toeY] = pol2cart(linspace(0, 2 * pi, 100), ...
-                             ones(1, 100) * vp.toeDiam);
+                             ones(1, 100) * visParams.toeDiam);
             toeX = toeX + xtoes(ti);
             toeY = toeY + 0;
-            toeCircle = fill(toeX, toeY, vp.toeColor);
-            alpha(vp.toeAlpha);
+            toeCircle = fill(toeX, toeY, visParams.toeColor);
+            alpha(visParams.toeAlpha);
         end
         
-        if vp.drawText
+        if visParams.drawText
             timeText.String = sprintf('Simulation time: %f', time);
             lenText.String = sprintf('len: %f', lens(ti));
         end
 
-        camWidth = sp.slipPatch(2) - sp.slipPatch(1) + vp.camMargin;
-        camArea = [sp.slipPatch(1) - vp.camMargin / 2, ...
-                   sp.slipPatch(2) + vp.camMargin / 2, ...
-                   sp.maxlen / 2 - camWidth / 2, ...
-                   sp.maxlen / 2 + camWidth / 2];
+        camWidth = ntoParams.slipPatch(2) - ntoParams.slipPatch(1) + visParams.camMargin;
+        camArea = [ntoParams.slipPatch(1) - visParams.camMargin / 2, ...
+                   ntoParams.slipPatch(2) + visParams.camMargin / 2, ...
+                   ntoParams.maxlen / 2 - camWidth / 2, ...
+                   ntoParams.maxlen / 2 + camWidth / 2];
         
         axis(camArea);
         set(gca,'visible','off');
         axis square;
         axis manual;
-        pause(vp.dt * vp.pauseFactor);
+        pause(visParams.dt * visParams.pauseFactor);
         
-        if ~has_saved && ~strcmp(vp.picPath, 'none')
-            saveas(fig, vp.picPath);
+        if ~has_saved && ~strcmp(visParams.picPath, 'none')
+            saveas(fig, visParams.picPath);
             has_saved = true;
         end
     end

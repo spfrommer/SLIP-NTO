@@ -3,6 +3,7 @@ addpath('cost');
 addpath('ntofuns');
 addpath('sim');
 addpath('test');
+addpath('test/ode');
 addpath('utils');
 addpath('visualization');
 rng('shuffle');

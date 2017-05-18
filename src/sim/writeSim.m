@@ -1,10 +1,10 @@
 function [] = writeSim( results, simNum )
     fid = fopen(Resource.instance().getDataPath(num2str(simNum)), 'w');
-    fprintf(fid, '%.12f,', results.spFor.slipPatch);
+    fprintf(fid, '%.12f,', results.paramsFor.slipPatch);
     fprintf(fid, '\n');
-    fprintf(fid, '%.12f,', results.spFor.initialState);
+    fprintf(fid, '%.12f,', results.paramsFor.initialState);
     fprintf(fid, '\n');
-    fprintf(fid, '%.12f\n', results.spFor.finalProfileX);
+    fprintf(fid, '%.12f\n', results.paramsFor.finalProfileX);
     
     fprintf(fid, '%.12f,', results.optimalBack);
     fprintf(fid, '\n');
