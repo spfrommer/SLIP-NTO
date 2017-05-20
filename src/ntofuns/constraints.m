@@ -1,24 +1,24 @@
-function [ c, ceq ] = constraints( funparams, params )
+function [ c, ceq ] = constraints( funParams, ntoParams )
     % Phase inequality constraints
-    phaseIC = sym('pic', [1, 4*params.gridn*size(params.phases, 1)])';
+    phaseIC = sym('pic', [1, 4*ntoParams.gridn*size(ntoParams.phases, 1)])';
      
     % Phase equality constraints
-    phaseEC = sym('pec', [1, 8*(params.gridn-1)*size(params.phases, 1)])';
+    phaseEC = sym('pec', [1, 8*(ntoParams.gridn-1)*size(ntoParams.phases, 1)])';
     % Phase transition equality constraints
-    transEC = sym('tec', [1, 8*(size(params.phases, 1)-1)])';
+    transEC = sym('tec', [1, 8*(size(ntoParams.phases, 1)-1)])';
     
     % Unpack the parameter vector
     [ stanceT, flightT, xtoe, xtoedot, x, xdot, y, ydot, ...
-           ra, radot, raddot, torque] = unpack(funparams, params);
+           ra, radot, raddot, torque] = unpack(funParams, ntoParams);
     
     % Iterate over all the phases
-    for p = 1 : size(params.phases, 1)
-        phaseStr = params.phases(p, :);
+    for p = 1 : size(ntoParams.phases, 1)
+        phaseStr = ntoParams.phases(p, :);
         % The index of the first dynamics variable for the current phase
-        ps = (p - 1) * params.gridn + 1;
+        ps = (p - 1) * ntoParams.gridn + 1;
         
         % Calculate the timestep for that specific phase
-        dt = stanceT(p) / params.gridn;
+        dt = stanceT(p) / ntoParams.gridn;
         
         % Take off state at the end of the last phase
         if p > 1
@@ -34,7 +34,7 @@ function [ c, ceq ] = constraints( funparams, params )
             rland = sqrt((x(ps) - xtoe(ps))^2 + y(ps)^2);
             
             [xtoedotland, xland, xdotland, yland, ydotland] = ...
-                ballisticDynamics(toState, flightT(p-1), phaseStr, params);
+                ballisticDynamics(toState, flightT(p-1), phaseStr, ntoParams);
             % Grf must equal zero at takeoff
             transEC((p-2)*8+1 : (p-1)*8) = ...
                     [xtoedotland-xtoedot(ps); xland-x(ps); ...
@@ -43,13 +43,13 @@ function [ c, ceq ] = constraints( funparams, params )
         end
             
         % Offset in the equality parameter vector due to phase
-        pecOffset = 8 * (params.gridn - 1) * (p - 1);
+        pecOffset = 8 * (ntoParams.gridn - 1) * (p - 1);
         % Offset in the inequality parameter vector due to phase
-        picOffset = 4 * (params.gridn) * (p - 1);
+        picOffset = 4 * (ntoParams.gridn) * (p - 1);
         
         [statedotN, auxvarsN] = stanceDynamics(stateN, raddot(ps), ...
-                                          torque(ps), params, phaseStr);
-        for i = 1 : params.gridn - 1
+                                          torque(ps), ntoParams, phaseStr);
+        for i = 1 : ntoParams.gridn - 1
             % The state at the beginning of the time interval
             stateI = stateN;
             % What the state should be at the end of the time interval
@@ -61,7 +61,7 @@ function [ c, ceq ] = constraints( funparams, params )
             auxvarsI = auxvarsN;
             % The state derivative at the end of the time interval
             [statedotN, auxvarsN] = stanceDynamics(stateN, ...
-                                raddot(ps+i), torque(ps+i), params, phaseStr);
+                                raddot(ps+i), torque(ps+i), ntoParams, phaseStr);
 
             % The end position of the time interval calculated using quadrature
             endState = stateI + dt * (statedotI + statedotN) / 2;
@@ -71,22 +71,22 @@ function [ c, ceq ] = constraints( funparams, params )
             phaseEC(pecOffset+(i-1)*8+1:pecOffset+i*8) = stateN - endState;
             % Constrain the length of the leg, grf, and body y pos
             phaseIC(picOffset+(i-1)*4+1 : picOffset+i*4) = ...
-                    [auxvarsI.r - params.maxlen; params.minlen - auxvarsI.r; ...
-                     -auxvarsI.grf; auxvarsI.grf - params.maxgrf];
+                    [auxvarsI.r - ntoParams.maxlen; ntoParams.minlen - auxvarsI.r; ...
+                     ntoParams.mingrf - auxvarsI.grf; auxvarsI.grf - ntoParams.maxgrf];
         end
         
-        if p == size(params.phases, 1)
+        if p == size(ntoParams.phases, 1)
             % Constrain the length of the leg at the end position
             % Since it's the end of the last phase, add grf constraint
-            phaseIC(picOffset+(params.gridn-1)*4+1:picOffset+params.gridn*4) = ...
-                [auxvarsN.r - params.maxlen; params.minlen - auxvarsN.r; ...
-                -auxvarsN.grf; auxvarsN.grf - params.maxgrf];
+            phaseIC(picOffset+(ntoParams.gridn-1)*4+1:picOffset+ntoParams.gridn*4) = ...
+                [auxvarsN.r - ntoParams.maxlen; ntoParams.minlen - auxvarsN.r; ...
+                ntoParams.mingrf - auxvarsN.grf; auxvarsN.grf - ntoParams.maxgrf];
         else 
             % Constrain the length of the leg at the end position
             % No ground reaction force constraint (this will be handled in
             % transition equality constraints)
-            phaseIC(picOffset+(params.gridn-1)*4+1:picOffset+params.gridn*4) = ...
-                [auxvarsN.r - params.maxlen; params.minlen - auxvarsN.r; -1; -1];
+            phaseIC(picOffset+(ntoParams.gridn-1)*4+1:picOffset+ntoParams.gridn*4) = ...
+                [auxvarsN.r - ntoParams.maxlen; ntoParams.minlen - auxvarsN.r; -1; -1];
         end
     end
     
@@ -97,7 +97,7 @@ function [ c, ceq ] = constraints( funparams, params )
                   y(1);    ydot(1);    ra(1); radot(1)];
               
     % Add first phase start constraints
-    ceq = [ceq; initialState - params.initialState];
+    ceq = [ceq; initialState - ntoParams.initialState];
     % Add last phase end constraints
-    ceq = [ceq; x(end) - params.finalProfileX; xtoe(end) - params.finalProfileX];
+    ceq = [ceq; x(end) - ntoParams.finalProfileX; xtoe(end) - ntoParams.finalProfileX];
 end

@@ -1,7 +1,7 @@
-function [ time ] = timecost( funparams, params )
+function [ time ] = timecost( funParams, ntoParams )
     % Unpack the vector
     [stanceT, flightT, ~, ~, ~, ~, ~, ~, ~, ~] = ...
-        unpack(funparams, params);
+        unpack(funParams, ntoParams);
     
     time = sum(stanceT) + sum(flightT);
 end

@@ -1,15 +1,15 @@
-function [ cost ] = actworkcost( funparams, params )
+function [ cost ] = actworkcost( funParams, ntoParams )
     % Unpack the vector
     [stanceT, ~, xtoe, ~, x, xdot, y, ydot, ra, radot, ~, torque] = ...
-        unpack(funparams, params);
-    phaseN = size(params.phases, 1);
+        unpack(funParams, ntoParams);
+    phaseN = size(ntoParams.phases, 1);
     
     r = sqrt((x - xtoe).^2 + y.^2);
     rdot = ((x-xtoe).*(xdot)+y.*ydot)./(r);
-    fs = params.spring * (ra - r) + params.damp * (radot - rdot);
+    fs = ntoParams.spring * (ra - r) + ntoParams.damp * (radot - rdot);
     
-    startRemInd = 1 : params.gridn : params.gridn * phaseN;
-    endRemInd = params.gridn : params.gridn : params.gridn * phaseN;
+    startRemInd = 1 : ntoParams.gridn : ntoParams.gridn * phaseN;
+    endRemInd = ntoParams.gridn : ntoParams.gridn : ntoParams.gridn * phaseN;
     
     [fsA, fsB] = deal(fs);
     fsA(startRemInd) = [];
@@ -21,9 +21,9 @@ function [ cost ] = actworkcost( funparams, params )
     radotB(endRemInd) = [];
     radotCombined = (radotA + radotB) .* 0.5;
     
-    epsilon = 0.001;
+    epsilon = ntoParams.sqrtSmooth;
     workRa = (sqrt((fsCombined.*radotCombined).^2 + epsilon^2) - epsilon);
-    workRa = workRa .* kron(stanceT./params.gridn, ones(params.gridn - 1, 1));
+    workRa = workRa .* kron(stanceT./ntoParams.gridn, ones(ntoParams.gridn - 1, 1));
     
     angles = atan2(y, x - xtoe);
     angleShift = [angles(1); angles(1 : end-1)];
@@ -36,4 +36,8 @@ function [ cost ] = actworkcost( funparams, params )
     
     workAng = sqrt((torqueCombined.*angleDeltas).^2 + epsilon^2) - epsilon;
     cost = sum(workRa) + sum(workAng);
+    
+    % Add small regularization term to force unique solution
+    %cost = cost + 1e-3 * actsqrcost(funParams, ntoParams);
+    cost = cost + 1e-2 * actsqrcost(funParams, ntoParams);
 end

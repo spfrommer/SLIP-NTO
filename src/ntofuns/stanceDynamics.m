@@ -18,7 +18,7 @@ function [ statedot, auxvars ] = stanceDynamics( state, raddot, ...
 
     % Check if the phase should be slipping
     if strcmp(phaseStr, 'sli')
-        ff = -params.friction * tanh(xtoedot * 50) * grf;
+        ff = -params.friction * tanh(xtoedot * params.tanhSmooth) * grf;
         xtoeddot = (1/params.masstoe) * (-fs*cphi - ft*sphi + ff);
     else
         xtoeddot = 0;

@@ -30,7 +30,11 @@ classdef NTOParams < handle
         minlen = 0.5;          % Minimum length of the leg
         maxlen = 1;            % Maximum length of the leg
         
-        maxgrf = 3;            % Maximum ground reaction force
+        mingrf = 0;            % Minimum ground reaction force
+        maxgrf = 1000;         % Maximum ground reaction force
+        
+        sqrtSmooth = 0.001;    % Smoothing factor for the work function
+        tanhSmooth = 50;       % Smoothing factor for the dynamics
     end
     
     methods
