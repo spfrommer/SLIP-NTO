@@ -7,7 +7,7 @@ classdef NTOParams < handle
         slipPatch
         % The initial state of the SLIP over the ice
         initialState
-        % The final x position of the toe and the hip
+        % The final x position of the toe and the hip (if NaN ignore)
         finalProfileX
 
         gridn = 10;            % Number of grid points during stance phase
