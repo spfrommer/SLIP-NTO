@@ -98,6 +98,7 @@ function [ c, ceq ] = constraints( funParams, ntoParams )
               
     % Add first phase start constraints
     ceq = [ceq; initialState - ntoParams.initialState];
+    
     % Add last phase end constraints
     if isnan(ntoParams.finalProfileX)
         ceq = [ceq; xtoe(end) - x(end)];

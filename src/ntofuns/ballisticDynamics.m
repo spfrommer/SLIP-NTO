@@ -1,6 +1,5 @@
 function [ xtoedotland, xland, xdotland, yland, ydotland ] = ...
         ballisticDynamics( toState, flightTime, landPhaseStr, params )
-
     % Expand the important information from the takeoff state
     stateCell = num2cell(toState');
     [~, ~, x, xdot, y, ydot, ~, ~] = deal(stateCell{:});
