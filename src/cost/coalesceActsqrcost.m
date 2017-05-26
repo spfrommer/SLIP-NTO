@@ -1,7 +1,8 @@
 function [ cost ] = coalesceActsqrcost( stanceT, raddot, torque, ntoParams )
     phasen = size(ntoParams.phases, 1);
     
-    dts = kron(stanceT./ntoParams.gridn, ones(ntoParams.gridn-1, 1));
+    dts = repmat(stanceT./ntoParams.gridn, 1, ntoParams.gridn-1)';
+    dts = dts(:)';
     
     startRemInd = 1 : ntoParams.gridn : ntoParams.gridn * phasen;
     endRemInd = ntoParams.gridn : ntoParams.gridn : ntoParams.gridn * phasen;
@@ -14,7 +15,7 @@ function [ cost ] = coalesceActsqrcost( stanceT, raddot, torque, ntoParams )
     [torqueA, torqueB] = deal(torque);
     torqueA = torqueA(startInds);
     torqueB = torqueB(endInds);
-    torqueCosts = 0.5 .* dts(1) .* (torqueA.^2 + torqueB.^2);
+    torqueCosts = 0.5 .* dts .* (torqueA.^2 + torqueB.^2);
     
     torqueCost = torqueCosts(1);
     for i = 2:length(torqueCosts)
@@ -24,7 +25,7 @@ function [ cost ] = coalesceActsqrcost( stanceT, raddot, torque, ntoParams )
     [raddotA, raddotB] = deal(raddot);
     raddotA = raddotA(startInds);
     raddotB = raddotB(endInds);
-    raddotCosts = 0.5 .* dts(1) .* (raddotA.^2 + raddotB.^2);
+    raddotCosts = 0.5 .* dts .* (raddotA.^2 + raddotB.^2);
 
     raddotCost = raddotCosts(1);
     for i = 2:length(raddotCosts)

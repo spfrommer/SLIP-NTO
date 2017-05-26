@@ -92,7 +92,7 @@ function [ c, ceq ] = coalesceConstraints( funParams, ntoParams )
     end
     
     c = phaseIC;
-    ceq = [phaseEC; transEC];
+    ceq = [phaseEC, transEC];
     
     initialState = [xtoe(1); xtoedot(1); x(1);  xdot(1);   ...
                     y(1);    ydot(1);    ra(1); radot(1)];
@@ -102,13 +102,10 @@ function [ c, ceq ] = coalesceConstraints( funParams, ntoParams )
     ceq(end+1:end+8) = initialState - ntoParams.initialState;
     
     % Add last phase end constraints
-    ceq(end+1) = x(end) - ntoParams.finalProfileX;
-    %{
     if isnan(ntoParams.finalProfileX)
         ceq = [ceq; xtoe(end) - x(end)];
     else
         ceq = [ceq; x(end) - ntoParams.finalProfileX; xtoe(end) - ntoParams.finalProfileX];
     end
-    %}
 end
 

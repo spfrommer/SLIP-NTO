@@ -19,10 +19,10 @@ classdef NTOParams < handle
         % Friction coefficient between toe and ground on slippery surfaces
         friction = 0.05;
         
-        minStanceTime = 0.5;   % Minimum stance phase time
-        maxStanceTime = 1.8;   % Maximum stance phase time
-        minFlightTime = 0.4;   % Minimum flight phase time
-        maxFlightTime = 10;    % Maximum flight phase time
+        minStanceTime = 0.1;   % Minimum stance phase time
+        maxStanceTime = 1000;  % Maximum stance phase time
+        minFlightTime = 0;     % Minimum flight phase time
+        maxFlightTime = 1000;  % Maximum flight phase time
         minraddot = -1;        % Minimum second deriv of actuated length
         maxraddot = 1;         % Maximum second deriv of actuated length
         mintorque = -1;        % Minimum torque at hip
