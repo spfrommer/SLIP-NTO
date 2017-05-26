@@ -1,5 +1,11 @@
 function [ type, limit, gridPoint ] = getIneqConstraint( ntoParams, index )
 %GETCONSTRAINTTYPE Returns the type of inequality constraint located at that index
+
+    % In case the inequality constraint is non-standard
+    type = 'none';
+    limit = NaN;
+    gridPoint = NaN;
+    
     for p = 1 : size(ntoParams.phases, 1)
         % Offset in the inequality parameter vector due to phase
         picOffset = 4 * (ntoParams.gridn) * (p - 1);
