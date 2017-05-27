@@ -1,7 +1,6 @@
 function [ output_args ] = odeDynamics( t, state, stanceT, flightT, ...
-                                        raddot, torque, ntoParams )
-%ODEDYNAMICS Summary of this function goes here
-%   Detailed explanation goes here
+                                        raddot, torque, phaseStr, ntoParams )
+%ODEDYNAMICS Computes the stance-phase dynamics for the ode
     flightTAug = [flightT, Inf];
     combT = [stanceT'; flightTAug'];
     combT = combT(:);
