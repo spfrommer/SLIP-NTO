@@ -4,7 +4,7 @@ function [] = checkSaturated( funParams, constraintsFun, ntoParams )
     [lb, ub] = bounds(ntoParams);
     
     for i = 1:length(lb)
-        [type, gridPoint] = getParamType(ntoParams, i);
+        [type, gridPoint] = getParamType(i, ntoParams);
         if abs(funParams(i)-lb(i)) < 1e-9
             fprintf('%s hitting lower bound (%f) at element %d and grid point %d\n', ...
                     type, lb(i), i, gridPoint);
@@ -17,7 +17,7 @@ function [] = checkSaturated( funParams, constraintsFun, ntoParams )
     [ci, ~, ~, ~] = constraintsFun(funParams);
     
     for i = 1:length(ci)
-        [type, limit, gridPoint] = getIneqConstraint(ntoParams, i);
+        [type, limit, gridPoint] = getIneqConstraint(i, ntoParams);
         if ci(i) + 1e-9 >= 0
             fprintf('%s constraint active (limit %f, violation %f) at element %d and grid point %d\n', ...
                     type, limit, ci(i), i, gridPoint);

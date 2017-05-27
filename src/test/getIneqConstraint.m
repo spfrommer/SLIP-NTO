@@ -1,4 +1,4 @@
-function [ type, limit, gridPoint ] = getIneqConstraint( ntoParams, index )
+function [ type, limit, gridPoint ] = getIneqConstraint( index, ntoParams )
 %GETCONSTRAINTTYPE Returns the type of inequality constraint located at that index
 
     % In case the inequality constraint is non-standard

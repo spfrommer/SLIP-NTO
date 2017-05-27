@@ -1,4 +1,4 @@
-function [ type, gridPoint ] = getParamType( ntoParams, index )
+function [ type, gridPoint ] = getParamType( index, ntoParams )
 %GET Returns the type of parameter located at that index
     p = size(ntoParams.phases, 1);
     cnt = ntoParams.gridn * p;
