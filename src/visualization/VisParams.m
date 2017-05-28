@@ -1,5 +1,7 @@
 classdef VisParams < matlab.mixin.Copyable
     properties
+        figSize % Width and height in pixels
+        
         camMargin = 0.5;
         drawText = false;
         dt = 0.03;
@@ -23,7 +25,7 @@ classdef VisParams < matlab.mixin.Copyable
         toeMColor = [0.3, 0.3, 0.3];
         toeMStartColor = [0 1 0];
         toeMEndColor = [0.05 0.8 1];
-        markerSize = 8;
+        markerSize % The marker size in pixels
         interpolate = true;
         showPath = true;
         % Take every nth element from time-interpolate hip positions
@@ -31,6 +33,17 @@ classdef VisParams < matlab.mixin.Copyable
         
         % Filename where to save starting pic, if at all
         picPath = 'none';
+        vidPath = 'none';
+    end
+    methods
+        function obj = VisParams(figSize)
+            if nargin == 0
+                figSize = 650;
+            end
+            
+            obj.figSize = figSize;
+            obj.markerSize = figSize / 50;
+        end
     end
 end
 

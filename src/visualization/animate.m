@@ -3,6 +3,7 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
     % Initialize the figure
     figure(fig);
     clf;
+    set(fig, 'Position', [0 0 visParams.figSize visParams.figSize]);
     % Make all the plots draw to the same figure
     hold on;
     % Draw ground
@@ -87,8 +88,13 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
         timeText = text(0, 1.8, sprintf('Simulation time: %f', time), 'FontSize', 13);
         lenText = text(0, 1.6, sprintf('len: %f', 0), 'FontSize', 13);
     end
+    
+    if ~strcmp(visParams.vidPath, 'none')
+        video = VideoWriter(visParams.vidPath,'MPEG-4');
+        open(video);
+    end
 
-    has_saved = false;
+    savedPic = false;
     while time <= times(end)
         time = time + visParams.dt;
         tgreater = find(times >= time);
@@ -149,10 +155,10 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
             lenText.String = sprintf('len: %f', lens(ti));
         end
     
-        %leftCapture = ntoParams.slipPatch(1);
-        %rightCapture = ntoParams.slipPatch(2);
-        leftCapture = -1;
-        rightCapture = 1;
+        leftCapture = ntoParams.slipPatch(1);
+        rightCapture = ntoParams.slipPatch(2);
+        %leftCapture = -1;
+        %rightCapture = 1;
         camWidth = rightCapture - leftCapture + visParams.camMargin;
         camArea = [leftCapture - visParams.camMargin / 2, ...
                    rightCapture + visParams.camMargin / 2, ...
@@ -162,13 +168,22 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
         axis(camArea);
         set(gca,'visible','off');
         axis square;
-        axis manual;
+        set(gca,'position',[0 0 1 1],'units','normalized')
         pause(visParams.dt * visParams.pauseFactor);
         
-        if ~has_saved && ~strcmp(visParams.picPath, 'none')
+        if ~savedPic && ~strcmp(visParams.picPath, 'none')
             saveas(fig, visParams.picPath);
-            has_saved = true;
+            savedPic = true;
         end
+        
+        if ~strcmp(visParams.vidPath, 'none')
+            f = getframe(fig);
+            writeVideo(video, f);
+        end
+    end
+    
+    if ~strcmp(visParams.vidPath, 'none')
+        close(video);
     end
 end
 
