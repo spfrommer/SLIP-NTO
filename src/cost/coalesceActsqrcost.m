@@ -1,7 +1,7 @@
 function [ cost ] = coalesceActsqrcost( stanceT, raddot, torque, ntoParams )
     phasen = size(ntoParams.phases, 1);
     
-    dts = repmat(stanceT./ntoParams.gridn, 1, ntoParams.gridn-1)';
+    dts = repmat(stanceT./(ntoParams.gridn-1), 1, ntoParams.gridn-1)';
     dts = dts(:)';
     
     startRemInd = 1 : ntoParams.gridn : ntoParams.gridn * phasen;

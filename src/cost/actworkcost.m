@@ -23,7 +23,7 @@ function [ cost ] = actworkcost( funParams, ntoParams )
     
     epsilon = ntoParams.sqrtSmooth;
     workRa = (sqrt((fsCombined.*radotCombined).^2 + epsilon^2) - epsilon);
-    workRa = workRa .* kron(stanceT./ntoParams.gridn, ones(ntoParams.gridn - 1, 1));
+    workRa = workRa .* kron(stanceT./(ntoParams.gridn-1), ones(ntoParams.gridn - 1, 1));
     
     angles = atan2(y, x - xtoe);
     angleShift = [angles(1); angles(1 : end-1)];

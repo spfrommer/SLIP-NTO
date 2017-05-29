@@ -18,7 +18,7 @@ function [ c, ceq ] = constraints( funParams, ntoParams )
         ps = (p - 1) * ntoParams.gridn + 1;
         
         % Calculate the timestep for that specific phase
-        dt = stanceT(p) / ntoParams.gridn;
+        dt = stanceT(p) / (ntoParams.gridn - 1);
         
         % Take off state at the end of the last phase
         if p > 1

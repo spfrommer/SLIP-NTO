@@ -4,7 +4,7 @@ function [ cost ] = actsqrcost( funParams, ntoParams )
         unpack(funParams, ntoParams);
     phasen = size(ntoParams.phases, 1);
     
-    dts = kron(stanceT./ntoParams.gridn, ones(ntoParams.gridn-1, 1));
+    dts = kron(stanceT./(ntoParams.gridn-1), ones(ntoParams.gridn-1, 1));
     
     startRemInd = 1 : ntoParams.gridn : ntoParams.gridn * phasen;
     endRemInd = ntoParams.gridn : ntoParams.gridn : ntoParams.gridn * phasen;
