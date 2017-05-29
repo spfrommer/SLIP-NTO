@@ -3,7 +3,6 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
     % Initialize the figure
     figure(fig);
     clf;
-    set(fig, 'Position', [0 0 visParams.figSize visParams.figSize]);
     % Make all the plots draw to the same figure
     hold on;
     % Draw ground
@@ -168,7 +167,7 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
         axis(camArea);
         set(gca,'visible','off');
         axis square;
-        set(gca,'position',[0 0 1 1],'units','normalized')
+        set(gca,'position',[0 0 1 1],'units','normalized');
         pause(visParams.dt * visParams.pauseFactor);
         
         if ~savedPic && ~strcmp(visParams.picPath, 'none')

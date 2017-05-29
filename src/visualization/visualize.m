@@ -52,7 +52,7 @@ function [] = visualize( funparams, ntoParams, visParams )
     fig = figure();
 
     clf;
-    set(fig, 'Position', [100, 200, 600, 550]);
+    set(fig, 'Position', [0 0 visParams.figSize visParams.figSize]);    
     toolbar = uitoolbar(fig);
     % Prevent clf from clearing the toolbar
     toolbar.HandleVisibility = 'off';
