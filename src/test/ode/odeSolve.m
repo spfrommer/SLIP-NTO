@@ -1,42 +1,56 @@
-function [ solved ] = odeSolve( funParams, ntoParams )
+function [ times, states ] = odeSolve( funParams, ntoParams )
 %ODESOLVE Runs an ODE solver to verify the nto output
     
     % Unpack the parameter vector
-    [ stanceT, flightT, ~, ~, ~, ~, ~, ~, ...
+    [ stanceT, ~, xtoe, ~, x, ~, y, ydot, ...
            ~, ~, raddot, torque] = unpack(funParams, ntoParams);
-    
-    flightTAug = [0; flightT];
-    cumT = [flightTAug'; stanceT'];
-    cumT = cumsum(cumT(:));
     
     % starting state at the beginning of the phase
     stateI = ntoParams.initialState;
     times = [];
     states = [];
+    
+    cumT = 0;
 
     for p = 1:size(ntoParams.phases, 1)
         phaseStr = ntoParams.phases(p, :);
         
-        stanceStartTime = cumT((p-1) * 2 + 1);
-        stanceEndTime = stanceStartTime + stanceT(p);
-        times = linspace(stanceStartTime, stanceEndTime, ntoParams.gridn);
+        stanceStartTime = cumT;
+        stanceEndTime = cumT + stanceT(p);
+        gridTimes = linspace(stanceStartTime, stanceEndTime, ntoParams.gridn);
         raddotPhase = raddot((p-1) * ntoParams.gridn + 1 : p * ntoParams.gridn);
         torquePhase = torque((p-1) * ntoParams.gridn + 1 : p * ntoParams.gridn);
     
-        raddotFun = @(x) interp1(times, raddotPhase, x);
-        torqueFun = @(x) interp1(times, torquePhase, x);
+        raddotFun = @(xs) interp1(gridTimes, raddotPhase, xs);
+        torqueFun = @(xs) interp1(gridTimes, torquePhase, xs);
 
-        %[t, states] = ode45(@(t, y) odeDynamics(t, y, stanceT, flightT, ...
-        %                                    raddot, torque, ntoParams), ...
-        %                [fligh], ntoParams.initialState);
-        [t, states] = ode45(@(t, y) stanceDynamics(y, raddotFun(t), ...
+        [t, odeStates] = ode45(@(t, state) stanceDynamics(state, raddotFun(t), ...
                                     torqueFun(t), ntoParams, phaseStr), ...
-                            [stanceStartTime, stanceEndTime], stateI);
-        times = [times, t];
+                                    [stanceStartTime, stanceEndTime], stateI);
+        times = [times; t];
+        states = [states; odeStates];
         
+        cumT = stanceEndTime;
+        if p < size(ntoParams.phases, 1)
+            yland = y(p * ntoParams.gridn + 1);
+            ballisticT = max(roots([-0.5 * ntoParams.gravity, ...
+                ydot(p * ntoParams.gridn), y(p * ntoParams.gridn) - yland]));
+            landTime = cumT + ballisticT;
+            
+            [ xtoedotland, xland, xdotland, yland, ydotland ] = ...
+                ballisticDynamics(states(end, :), ballisticT, ntoParams.phases(p+1, :), ntoParams);
+            
+            xtoeland = xland + xtoe(p * ntoParams.gridn + 1) - x(p * ntoParams.gridn + 1);
+            raland = sqrt(yland^2 + (xtoeland-xland)^2);
+            radotland = 0;
+            stateland = [xtoeland, xtoedotland, xland, xdotland, ...
+                         yland, ydotland, raland, radotland];
+            times = [times; landTime];
+            states = [states; stateland];
+            stateI = stateland;
+            
+            cumT = landTime;
+        end
     end
-    
-    
-    
 end
 
