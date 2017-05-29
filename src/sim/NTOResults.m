@@ -71,9 +71,8 @@ classdef NTOResults < handle
            end
        end
        
-       function [] = saveRender( obj, simNum, vp )
-           % Saves a video of the trajectory and a snapshot of the starting
-           % state
+       function [] = saveRenderImage( obj, simNum, vp )
+           % Saves a snapshot of the starting state
            if nargin < 3
               vp = VisParams();
            end
@@ -82,6 +81,25 @@ classdef NTOResults < handle
            [pathb, pathf] = Resource.instance().getFigurePaths(simNum);
            vp.picPath = pathb;
            vp2.picPath = pathf;
+           
+           if obj.flagFor > 0
+              visualize(obj.optimalFor, obj.paramsFor, vp);
+           end
+           if obj.flagBack > 0
+              visualize(obj.optimalBack, obj.paramsBack, vp2);
+           end
+       end
+       
+       function [] = saveRenderVideo( obj, simNum, vp )
+           % Saves a video of the trajectory
+           if nargin < 3
+              vp = VisParams();
+           end
+           vp2 = copy(vp);
+           
+           [pathb, pathf] = Resource.instance().getVideoPaths(simNum);
+           vp.vidPath = pathb;
+           vp2.vidPath = pathf;
            
            if obj.flagFor > 0
               visualize(obj.optimalFor, obj.paramsFor, vp);

@@ -23,8 +23,8 @@ classdef (Sealed) Resource < handle
       end
       
       function [fpath, bpath] = getVideoPaths(obj, simNum)
-         fpath = strcat(obj.projRoot(), 'videos/vid', num2str(simNum), 'f.png');
-         bpath = strcat(obj.projRoot(), 'videos/vid', num2str(simNum), 'b.png');
+         fpath = strcat(obj.projRoot(), 'videos/vid', num2str(simNum), 'f.mp4');
+         bpath = strcat(obj.projRoot(), 'videos/vid', num2str(simNum), 'b.mp4');
       end
    end
    methods (Access = private)
