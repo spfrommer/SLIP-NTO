@@ -89,7 +89,7 @@ function [] = animate( fig, times, xtoes, xs, ys, phis, lens, ...
     end
     
     if ~strcmp(visParams.vidPath, 'none')
-        video = VideoWriter(visParams.vidPath,'MPEG-4');
+        video = VideoWriter(visParams.vidPath,'Motion JPEG AVI');
         open(video);
     end
 
