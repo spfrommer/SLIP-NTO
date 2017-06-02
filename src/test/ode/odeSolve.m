@@ -1,4 +1,4 @@
-function [ times, states ] = odeSolve( funParams, ntoParams )
+function [ times, states, transT ] = odeSolve( funParams, ntoParams )
 %ODESOLVE Runs an ODE solver to verify the nto output
     
     % Unpack the parameter vector
@@ -11,18 +11,20 @@ function [ times, states ] = odeSolve( funParams, ntoParams )
     states = [];
     
     cumT = 0;
+    transT = [];
 
     for p = 1:size(ntoParams.phases, 1)
         phaseStr = ntoParams.phases(p, :);
         
         stanceStartTime = cumT;
         stanceEndTime = cumT + stanceT(p);
+        transT = [transT; stanceStartTime; stanceEndTime];
         gridTimes = linspace(stanceStartTime, stanceEndTime, ntoParams.gridn);
         raddotPhase = raddot((p-1) * ntoParams.gridn + 1 : p * ntoParams.gridn);
         torquePhase = torque((p-1) * ntoParams.gridn + 1 : p * ntoParams.gridn);
     
-        raddotFun = @(xs) interp1(gridTimes, raddotPhase, xs);
-        torqueFun = @(xs) interp1(gridTimes, torquePhase, xs);
+        raddotFun = @(xs) interp1(gridTimes, raddotPhase, xs, 'linear');
+        torqueFun = @(xs) interp1(gridTimes, torquePhase, xs, 'linear');
 
         [t, odeStates] = ode45(@(t, state) stanceDynamics(state, raddotFun(t), ...
                                     torqueFun(t), ntoParams, phaseStr), ...
@@ -45,8 +47,8 @@ function [ times, states ] = odeSolve( funParams, ntoParams )
             radotland = 0;
             stateland = [xtoeland, xtoedotland, xland, xdotland, ...
                          yland, ydotland, raland, radotland];
-            times = [times; landTime];
-            states = [states; stateland];
+            %times = [times; landTime];
+            %states = [states; stateland];
             stateI = stateland;
             
             cumT = landTime;
