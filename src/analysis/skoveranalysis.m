@@ -2,6 +2,8 @@ results = readSim(14);
 % 14 is interesting
 af = results.analyzeFor();
 
+lineWidth = 4;
+
 times = linspace(0, af.stanceT(1), results.paramsFor.gridn);
 xtoe = af.xtoe(1:10) - af.xtoe(1);
 xtoedot = af.xtoedot(1:10);
@@ -29,23 +31,25 @@ xtoeQuery = interp1(times, xtoe, tQuery, 'spline');
 xtoedotQuery = interp1(times, xtoedot, tQuery, 'spline');
 
 fig = figure();
-set(fig, 'defaultAxesColorOrder', [0 0.5 0; 0 0 0.5]);
-title('Skateover: Toe Position / Velocity vs Time');
+set(fig, 'defaultAxesColorOrder', [0.96 0.56 0.26; 0.26 0.41 0.96]);
+title('Skateover: Foot Position / Velocity vs Time');
 
-%set(gca,'XTick',[])
 xlabel('Time (s, adjusted)');
+xticks(0:0.2:1.5);
 
 yyaxis left;
 hold on;
-plot(htQuery, hxtoeQuery, '--');
-plot(tQuery, xtoeQuery);
-ylabel('Toe Position (m)');
+plot(htQuery, hxtoeQuery, '--', 'LineWidth', lineWidth);
+plot(tQuery, xtoeQuery, 'LineWidth', lineWidth);
+ylabel('Foot Position (m)');
 ylim([-0.5, 0.5]);
 
 yyaxis right;
-plot(htQuery, hxtoedotQuery, '--');
-plot(tQuery, xtoedotQuery);
-ylabel('Toe Velocity (m/s)');
+plot(htQuery, hxtoedotQuery, '--', 'LineWidth', lineWidth);
+plot(tQuery, xtoedotQuery, 'LineWidth', lineWidth);
+ylabel('Foot Velocity (m/s)');
 ylim([-1.1, 1.1]);
 
-legend('Human Toe Position', 'SLIP Toe Position', 'Human Toe Velocity', 'SLIP Toe Velocity');
+legend({'Human Foot Position', 'SLIP Foot Position', 'Human Foot Velocity', 'SLIP Foot Velocity'}, 'Location', 'southwest');
+set(fig.CurrentAxes, 'TickDir', 'out');
+set(findall(fig,'-property','FontSize'), 'FontSize', 30)
