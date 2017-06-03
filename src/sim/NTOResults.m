@@ -13,7 +13,7 @@ classdef NTOResults < handle
     
     methods (Access = private)
         function [r, rdot, radotCombined, raddotCombined, fs, angleDeltas, torqueCombined, ...
-                workAng, workRa] = process(~, optimal, params)
+                workAng, workRa, grf] = process(~, optimal, params)
             [stanceT, ~, xtoe, ~, x, xdot, y, ydot, ra, radot, raddot, torque] = ...
                 unpack(optimal, params);
            phaseN = size(params.phases, 1);
@@ -53,6 +53,13 @@ classdef NTOResults < handle
            
            workRa = fsCombined .* radotCombined;
            workRa = workRa .* kron(stanceT./params.gridn, ones(params.gridn - 1, 1));
+           
+           cphi = (x-xtoe) ./ r;
+           sphi = y ./ r;
+           fs = params.spring * (ra - r) + params.damp * (radot - rdot);
+           ft = torque ./ r;
+           
+           grf = fs .* sphi - ft .* cphi + params.masstoe * params.gravity;
         end
     end
     
@@ -146,7 +153,7 @@ classdef NTOResults < handle
            af.torque = torque;
            
            [af.r, af.rdot, af.radotCombined, af.raddotCombined, af.fs, ...
-             af.angleDeltas, af.torqueCombined, af.workAng, af.workRa] ...
+             af.angleDeltas, af.torqueCombined, af.workAng, af.workRa, af.grf] ...
                = obj.process(obj.optimalFor, obj.paramsFor);
        end
        
