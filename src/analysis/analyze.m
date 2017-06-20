@@ -9,7 +9,7 @@ backStrats = zeros(numSims, 1); % -1 is none, 0 is normal, 1 is backslide
 bestStrats = zeros(numSims, 1);
 
 for i = 1 : numSims
-    fprintf('Analyzing sim: %f\n', i);
+    fprintf('Analyzing sim: %d\n', i);
     results = readSim(i);
     af = results.analyzeFor();
     ab = results.analyzeBack();
